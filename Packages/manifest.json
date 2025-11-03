@@ -10,6 +10,7 @@
     "com.unity.xr.arfoundation": "6.2.0",
     "com.unity.xr.interaction.toolkit": "3.2.1",
     "com.unity.xr.management": "4.5.2",
+    "com.unity.xr.mock-hmd": "1.4.0-preview.2",
     "com.unity.xr.openxr": "1.15.1",
     "edu.cornell.xrc.toolkit.core": "https://github.com/xrcollaboratory/edu.cornell.xrc.toolkit.core.git",
     "com.unity.modules.accessibility": "1.0.0",
