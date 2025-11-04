@@ -23,6 +23,10 @@ public class SphereSelectLogic : MonoBehaviour
     [Tooltip("The maximum radius the sphere can expand to.")]
     [SerializeField]
     public float maxRadius = 2.0f;
+    
+    [Tooltip("The Sphere Collider component used for interaction detection.")]
+    [SerializeField]
+    private SphereCollider sphereCollider;
 
 
     [Header("Runtime Data (Read Only)")]
@@ -60,4 +64,15 @@ public class SphereSelectLogic : MonoBehaviour
             calculatedCenterOffset = Vector3.zero; 
         }
     }
+    private void LateUpdate()
+    {
+        if (sphereCollider != null)
+        {
+            sphereCollider.radius = currentRadius;
+            sphereCollider.center = calculatedCenterOffset;
+        }
+    }
+    
+    public bool IsHovering => interactor != null && interactor.isHovering;
+    public bool IsSelected => interactor != null && interactor.isSelectActive;
 }
