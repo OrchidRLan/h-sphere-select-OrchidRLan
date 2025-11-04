@@ -1,0 +1,120 @@
+Folder PATH listing for volume Windows-SSD
+Volume serial number is 7A5D-939C
+C:.
++---Assets
+¦   +---CompositionLayers
+¦   ¦   +---UserSettings
+¦   ¦       +---Resources
+¦   +---Resources
+¦   +---Samples
+¦   ¦   +---XR Interaction Toolkit
+¦   ¦   ¦   +---3.2.1
+¦   ¦   ¦       +---Starter Assets
+¦   ¦   ¦       ¦   +---AffordanceThemes
+¦   ¦   ¦       ¦   +---Animations
+¦   ¦   ¦       ¦   +---DemoSceneAssets
+¦   ¦   ¦       ¦   ¦   +---AffordanceThemes
+¦   ¦   ¦       ¦   ¦   +---Audio
+¦   ¦   ¦       ¦   ¦   +---Materials
+¦   ¦   ¦       ¦   ¦   +---Models
+¦   ¦   ¦       ¦   ¦   +---Prefabs
+¦   ¦   ¦       ¦   ¦   ¦   +---Climb
+¦   ¦   ¦       ¦   ¦   ¦   +---Interactables
+¦   ¦   ¦       ¦   ¦   ¦   +---Teleport
+¦   ¦   ¦       ¦   ¦   ¦   +---UI
+¦   ¦   ¦       ¦   ¦   +---Scripts
+¦   ¦   ¦       ¦   ¦   +---Settings
+¦   ¦   ¦       ¦   ¦   +---Sprites
+¦   ¦   ¦       ¦   ¦   +---Textures
+¦   ¦   ¦       ¦   +---Editor
+¦   ¦   ¦       ¦   ¦   +---Scripts
+¦   ¦   ¦       ¦   +---Filters
+¦   ¦   ¦       ¦   +---Materials
+¦   ¦   ¦       ¦   +---Models
+¦   ¦   ¦       ¦   +---Prefabs
+¦   ¦   ¦       ¦   ¦   +---Affordances
+¦   ¦   ¦       ¦   ¦   +---Controllers
+¦   ¦   ¦       ¦   ¦   +---Interactors
+¦   ¦   ¦       ¦   ¦   +---Teleport
+¦   ¦   ¦       ¦   +---Presets
+¦   ¦   ¦       ¦   +---Scripts
+¦   ¦   ¦       ¦   +---Shaders
+¦   ¦   ¦       ¦   +---Textures
+¦   ¦   ¦       ¦   +---TunnelingVignette
+¦   ¦   ¦       +---XR Interaction Simulator
+¦   ¦   ¦           +---Editor
+¦   ¦   ¦           +---Hand Expressions
+¦   ¦   ¦           +---Scripts
+¦   ¦   ¦           +---UI
+¦   ¦   ¦               +---Controller
+¦   ¦   ¦               +---General
+¦   ¦   ¦               +---Hands
+¦   ¦   ¦               +---Headset
+¦   ¦   ¦               +---Highlight
+¦   ¦   ¦               +---Modes
+¦   ¦   ¦               +---Rotate
+¦   ¦   ¦               +---Translate
+¦   ¦   +---XRC Core
+¦   ¦       +---0.2.1
+¦   ¦           +---XRC Starter Assets
+¦   ¦               +---Audio
+¦   ¦               +---Materials
+¦   ¦               +---Models
+¦   ¦               +---Prefabs
+¦   ¦               ¦   +---Deprecated
+¦   ¦               ¦   +---UI
+¦   ¦               +---Scenes
+¦   ¦               +---Scripts
+¦   ¦               +---Shaders
+¦   ¦               +---Sprites
+¦   ¦               ¦   +---Icons
+¦   ¦               ¦   +---UI
+¦   ¦               +---Textures
+¦   ¦                   +---Deprecated
+¦   +---Scenes
+¦   +---Settings
+¦   ¦   +---Project Configuration
+¦   +---TextMesh Pro
+¦   ¦   +---Documentation
+¦   ¦   +---Fonts
+¦   ¦   +---Resources
+¦   ¦   ¦   +---Fonts & Materials
+¦   ¦   ¦   +---Sprite Assets
+¦   ¦   ¦   +---Style Sheets
+¦   ¦   +---Shaders
+¦   ¦   +---Sprites
+¦   +---XR
+¦   ¦   +---Loaders
+¦   ¦   +---Resources
+¦   ¦   +---Settings
+¦   ¦   +---Temp
+¦   ¦   +---UserSimulationSettings
+¦   ¦       +---Resources
+¦   +---xrc-assignments-sphere-select
+¦   ¦   +---Scenes
+¦   +---XRI
+¦       +---Settings
+¦           +---Resources
++---Library
+¦   +---APIUpdater
+¦   +---Artifacts
+¦   ¦   +---00
+¦   ¦  ¦   ¦   +---ff
+¦   +---Bee
+¦   ¦   +---artifacts
+¦   ¦   +---CachedNodeOutput
+¦   +---BuildInstructions
+¦   +---BuildProfiles
+¦   +---BurstCache
+¦   ¦   +---JIT
+¦   ¦       +---Hashes
+¦   ¦           +---Objects
+¦   +---com.unity.ide.rider
+¦   +---PackageCache
+¦   ¦  +---Logs
++---Packages
++---ProjectSettings
+¦   +---Packages
+¦       +---com.unity.learn.iet-framework
+¦       +---com.unity.testtools.codecoverage
++---

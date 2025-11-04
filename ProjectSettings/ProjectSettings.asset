@@ -165,7 +165,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: xrc.assignments.sphereselect.lastname.netid
+    Android: xrc.assignments.sphereselect.chen.rc975
     Standalone: com.unity.template.mr
   buildNumber:
     Standalone: 0
