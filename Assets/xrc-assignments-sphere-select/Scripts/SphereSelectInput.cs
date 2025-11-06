@@ -1,51 +1,47 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class SphereSelectInput : MonoBehaviour
 {
-    [Tooltip("The core logic component responsible for clamping the radius and calculating the center offset.")]
-    [SerializeField]
-    private SphereSelectLogic logic;
-
-    [Tooltip("The 2D Axis input action reference for the right controller's thumbstick.")]
-    [SerializeField]
-    private InputActionReference thumbstickInput;
-
-
-    [Tooltip("The scale factor applied to the user input when changing the radius value. Determines the speed of resizing.")]
-    [SerializeField]
-    private float inputSensitivity = 1f; 
+    private SphereSelectLogic sphereSelectLogic;
 
     [SerializeField]
-    private float currentRadius; 
-    public float CurrentRadius => currentRadius;
-    private void Update()
+    [Tooltip("The scale factor applied to the user input when changing the radius value.")]
+    private float inputSensitivity = 0.5f;
+
+    [SerializeField]
+    private InputActionProperty changeRadius;
+
+    private void Awake()
     {
-        if (thumbstickInput == null || logic == null || !thumbstickInput.action.enabled) 
+        if (sphereSelectLogic == null)
         {
-            return;
+            sphereSelectLogic = GetComponent<SphereSelectLogic>();
         }
-        
-        Vector2 stickValue = thumbstickInput.action.ReadValue<Vector2>();
-        float yInput = stickValue.y;
-        float deltaRadius = yInput * inputSensitivity * Time.deltaTime;
-        float newTargetRadius = logic.CurrentRadius + deltaRadius;
-        logic.SetTargetRadius(newTargetRadius);
     }
-    
+
     private void OnEnable()
     {
-        if (thumbstickInput != null && thumbstickInput.action != null)
-        {
-            thumbstickInput.action.Enable();
-        }
+        changeRadius.action?.Enable();
     }
 
     private void OnDisable()
     {
-        if (thumbstickInput != null && thumbstickInput.action != null)
+        changeRadius.action?.Disable();
+    }
+
+    private void Update()
+    {
+        if (sphereSelectLogic == null)
+            return;
+
+        Vector2 inputValue = changeRadius.action?.ReadValue<Vector2>() ?? Vector2.zero;
+        float yInput = inputValue.y;
+
+        if (Mathf.Abs(yInput) > 0.1f)
         {
-            thumbstickInput.action.Disable();
+            float radiusChange = yInput * inputSensitivity * Time.deltaTime;
+            sphereSelectLogic.ChangeRadius(radiusChange);
         }
     }
 }

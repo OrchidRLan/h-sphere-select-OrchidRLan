@@ -1,57 +1,133 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class SphereSelectFeedback : MonoBehaviour
 {
-    [Tooltip("The core logic component, to read radius, offset, and state (Hover/Select).")]
+    private SphereSelectLogic sphereSelectLogic;
+
     [SerializeField]
-    private SphereSelectLogic logic;
-
-    [Tooltip("The Mesh Renderer for the visual representation of the sphere.")]
-    [SerializeField]
-    private MeshRenderer sphereMeshRenderer;
-
-
-    
-    [Header("Visual Properties")]
     [Tooltip("The material assigned to the sphere.")]
-    [SerializeField]
     private Material sphereMaterial;
 
-    [Tooltip("The fixed color of the selection sphere.")]
     [SerializeField]
-    private Color sphereFixedColor = new Color(1.0f, 0.0f, 0.0f, 0.4f); 
+    [Tooltip("Color of the sphere when the interactor is not hovering over any object.")]
+    private Color color = new Color(0.5f, 0.5f, 0.5f, 0.3f);
 
-    private void Start()
+    [SerializeField]
+    [Tooltip("Color of the sphere when the interactor is hovering over an object.")]
+    private Color hoverColor = new Color(1.0f, 0.0f, 0.0f, 0.6f);
+
+    private GameObject sphereVisual;
+    private MeshRenderer sphereRenderer;
+    private UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor interactor;
+    private SphereCollider sphereCollider;
+    private bool isHovering = false;
+    private bool isSelecting = false;
+
+    private void Awake()
     {
-        if (sphereMeshRenderer == null)
+        if (sphereSelectLogic == null)
         {
-            Debug.LogError("SphereMeshRenderer reference is missing on " + gameObject.name + ". Feedback disabled.");
-            enabled = false;
-            return;
+            sphereSelectLogic = GetComponent<SphereSelectLogic>();
         }
-        
-        sphereMeshRenderer.material = sphereMaterial;
+
+        interactor = sphereSelectLogic.Interactor;
+        sphereCollider = interactor.GetComponent<SphereCollider>();
+
+        CreateSphereVisual();
+
+        interactor.hoverEntered.AddListener(OnHoverEntered);
+        interactor.hoverExited.AddListener(OnHoverExited);
+        interactor.selectEntered.AddListener(OnSelectEntered);
+        interactor.selectExited.AddListener(OnSelectExited);
+    }
+
+    private void OnDestroy()
+    {
+        if (interactor != null)
+        {
+            interactor.hoverEntered.RemoveListener(OnHoverEntered);
+            interactor.hoverExited.RemoveListener(OnHoverExited);
+            interactor.selectEntered.RemoveListener(OnSelectEntered);
+            interactor.selectExited.RemoveListener(OnSelectExited);
+        }
+    }
+
+    private void CreateSphereVisual()
+    {
+        sphereVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphereVisual.name = "SphereVisual";
+        sphereVisual.transform.SetParent(interactor.transform);
+        sphereVisual.transform.localRotation = Quaternion.identity;
+
+        Collider col = sphereVisual.GetComponent<Collider>();
+        if (col != null)
+        {
+            Destroy(col);
+        }
+
+        sphereRenderer = sphereVisual.GetComponent<MeshRenderer>();
         if (sphereMaterial != null)
         {
-             sphereMaterial.color = sphereFixedColor;
+            sphereRenderer.material = new Material(sphereMaterial);
         }
+
+        UpdateColor();
+        UpdateSphereTransform();
     }
 
     private void Update()
     {
-        if (logic == null || sphereMeshRenderer == null || sphereMaterial == null) return;
-        float currentRadius = logic.CurrentRadius;
-        Vector3 centerOffset = logic.CalculatedCenterOffset;
-        bool isSelected = logic.IsSelected;
-        
-        sphereMeshRenderer.enabled = !isSelected;
-        
-        if (sphereMeshRenderer.enabled)
+        UpdateSphereTransform();
+        UpdateVisibility();
+    }
+
+    private void UpdateSphereTransform()
+    {
+        if (sphereVisual != null && sphereCollider != null)
         {
-            float diameter = currentRadius * 2f;
-            sphereMeshRenderer.transform.localScale = Vector3.one * diameter;
-            sphereMeshRenderer.transform.localPosition = centerOffset;
-            sphereMaterial.color = sphereFixedColor;
+            float diameter = sphereSelectLogic.Radius * 2f;
+            sphereVisual.transform.localScale = Vector3.one * diameter;
+            sphereVisual.transform.localPosition = sphereCollider.center;
         }
+    }
+
+    private void UpdateVisibility()
+    {
+        if (sphereVisual != null)
+        {
+            sphereVisual.SetActive(!isSelecting);
+        }
+    }
+
+    private void UpdateColor()
+    {
+        if (sphereRenderer != null && sphereRenderer.material != null)
+        {
+            Color targetColor = isHovering ? hoverColor : color;
+            sphereRenderer.material.color = targetColor;
+        }
+    }
+
+    private void OnHoverEntered(HoverEnterEventArgs args)
+    {
+        isHovering = true;
+        UpdateColor();
+    }
+
+    private void OnHoverExited(HoverExitEventArgs args)
+    {
+        isHovering = interactor.hasHover;
+        UpdateColor();
+    }
+
+    private void OnSelectEntered(SelectEnterEventArgs args)
+    {
+        isSelecting = true;
+    }
+
+    private void OnSelectExited(SelectExitEventArgs args)
+    {
+        isSelecting = interactor.hasSelection;
     }
 }

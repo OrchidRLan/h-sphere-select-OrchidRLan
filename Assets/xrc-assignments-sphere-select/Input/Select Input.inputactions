@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "Select Input",
+    "maps": [
+        {
+            "name": "Sphere Select",
+            "id": "3732edfa-601b-4b80-b760-f6a070ff6ea4",
+            "actions": [
+                {
+                    "name": "Change Radius",
+                    "type": "Value",
+                    "id": "45bc6ea2-55f9-4216-b5b3-fa580e27c248",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6d236b84-e21b-4059-9980-446366d36519",
+                    "path": "<XRController>{RightHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Change Radius",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
