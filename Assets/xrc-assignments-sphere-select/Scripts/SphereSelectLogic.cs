@@ -4,7 +4,6 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-// 定义接口，用于直接控制高亮显示（绕过 XR 事件系统）
 public interface IMultiSelectHighlight
 {
     void OnMultiSelectEnter();
@@ -14,7 +13,7 @@ public interface IMultiSelectHighlight
 public class SphereSelectLogic : MonoBehaviour
 {
     [SerializeField]
-    [Tooltip("The interactor responsible for selecting an object. If the interactor reference is not assigned in the inspector, the component will search for an interactor on the same game object.")]
+    [Tooltip("The interactor responsible for selecting an object.")]
     private XRBaseInteractor interactor;
 
     [SerializeField]
@@ -33,20 +32,16 @@ public class SphereSelectLogic : MonoBehaviour
     [Tooltip("Transform indicating the default position for the sphere center.")]
     private Transform defaultCenter;
 
-    public XRBaseInteractor Interactor => interactor;
     public float Radius { get; private set; }
+    public XRBaseInteractor Interactor => interactor;
 
     private SphereCollider sphereCollider;
     private Transform attachTransform;
     private Vector3 defaultCenterLocalPosition;
 
-    // 多选物体管理
     private List<Transform> selectedObjects = new List<Transform>();
     private List<Vector3> selectedLocalOffsets = new List<Vector3>();
     private List<Quaternion> selectedLocalRotations = new List<Quaternion>();
-    private List<Rigidbody> selectedRigidbodies = new List<Rigidbody>();
-    private List<bool> originalKinematicStates = new List<bool>();
-    private List<XRGrabInteractable> selectedInteractables = new List<XRGrabInteractable>();
     
     private bool isSelecting = false;
     private GameObject groupParent;
@@ -73,14 +68,9 @@ public class SphereSelectLogic : MonoBehaviour
         }
         attachTransform = interactor.attachTransform;
 
-        if (defaultCenter != null)
-        {
-            defaultCenterLocalPosition = interactor.transform.InverseTransformPoint(defaultCenter.position);
-        }
-        else
-        {
-            defaultCenterLocalPosition = Vector3.zero;
-        }
+        defaultCenterLocalPosition = defaultCenter != null 
+            ? interactor.transform.InverseTransformPoint(defaultCenter.position) 
+            : Vector3.zero;
 
         interactor.selectEntered.AddListener(OnSelectEntered);
         interactor.selectExited.AddListener(OnSelectExited);
@@ -104,7 +94,6 @@ public class SphereSelectLogic : MonoBehaviour
 
     private void OnSelectEntered(SelectEnterEventArgs args)
     {
-        // XR Toolkit 只会选中一个物体，但我们要收集范围内的所有物体
         if (!isSelecting)
         {
             isSelecting = true;
@@ -126,11 +115,7 @@ public class SphereSelectLogic : MonoBehaviour
         selectedObjects.Clear();
         selectedLocalOffsets.Clear();
         selectedLocalRotations.Clear();
-        selectedRigidbodies.Clear();
-        originalKinematicStates.Clear();
-        selectedInteractables.Clear();
 
-        // 创建虚拟父物体
         if (groupParent == null)
         {
             groupParent = new GameObject("MultiSelectGroup");
@@ -138,75 +123,49 @@ public class SphereSelectLogic : MonoBehaviour
         groupParent.transform.position = attachTransform.position;
         groupParent.transform.rotation = attachTransform.rotation;
 
-        // 使用物理检测收集所有物体
         Collider[] colliders = Physics.OverlapSphere(
             interactor.transform.TransformPoint(sphereCollider.center),
             Radius
         );
 
-        int collectedCount = 0;
-
         foreach (Collider col in colliders)
         {
             XRGrabInteractable interactable = col.GetComponent<XRGrabInteractable>();
             
-            // 只处理有 XRGrabInteractable 的物体
             if (interactable != null)
             {
                 Transform objTransform = col.transform;
                 
                 selectedObjects.Add(objTransform);
-                selectedInteractables.Add(interactable);
-                
-                // 保存相对位置和旋转
                 selectedLocalOffsets.Add(groupParent.transform.InverseTransformPoint(objTransform.position));
                 selectedLocalRotations.Add(Quaternion.Inverse(groupParent.transform.rotation) * objTransform.rotation);
-                
-                // 禁用物理
-                Rigidbody rb = col.GetComponent<Rigidbody>();
-                selectedRigidbodies.Add(rb);
-                if (rb != null)
-                {
-                    originalKinematicStates.Add(rb.isKinematic);
-                    rb.isKinematic = true;
-                }
-                else
-                {
-                    originalKinematicStates.Add(false);
-                }
 
-                // 关键：手动通知物体进入多选状态
-                NotifyMultiSelectEnter(objTransform);
-                
-                collectedCount++;
+                IMultiSelectHighlight highlight = objTransform.GetComponent<IMultiSelectHighlight>();
+                if (highlight != null)
+                {
+                    highlight.OnMultiSelectEnter();
+                }
             }
         }
-
-        Debug.Log($"Multi-selected {collectedCount} objects");
     }
 
     private void ReleaseObjects()
     {
-        // 通知所有物体退出多选状态
-        for (int i = 0; i < selectedObjects.Count; i++)
+        foreach (Transform obj in selectedObjects)
         {
-            if (selectedObjects[i] != null)
+            if (obj != null)
             {
-                NotifyMultiSelectExit(selectedObjects[i]);
-            }
-            
-            if (selectedRigidbodies[i] != null)
-            {
-                selectedRigidbodies[i].isKinematic = originalKinematicStates[i];
+                IMultiSelectHighlight highlight = obj.GetComponent<IMultiSelectHighlight>();
+                if (highlight != null)
+                {
+                    highlight.OnMultiSelectExit();
+                }
             }
         }
 
         selectedObjects.Clear();
         selectedLocalOffsets.Clear();
         selectedLocalRotations.Clear();
-        selectedRigidbodies.Clear();
-        originalKinematicStates.Clear();
-        selectedInteractables.Clear();
 
         if (groupParent != null)
         {
@@ -215,39 +174,13 @@ public class SphereSelectLogic : MonoBehaviour
         }
     }
 
-    private void NotifyMultiSelectEnter(Transform obj)
-    {
-        // 方法1：通过自定义接口
-        IMultiSelectHighlight highlight = obj.GetComponent<IMultiSelectHighlight>();
-        if (highlight != null)
-        {
-            highlight.OnMultiSelectEnter();
-        }
-        
-        // 方法2：通过 SendMessage（不推荐，但作为备用）
-        obj.SendMessage("OnMultiSelectEnter", SendMessageOptions.DontRequireReceiver);
-    }
-
-    private void NotifyMultiSelectExit(Transform obj)
-    {
-        IMultiSelectHighlight highlight = obj.GetComponent<IMultiSelectHighlight>();
-        if (highlight != null)
-        {
-            highlight.OnMultiSelectExit();
-        }
-        
-        obj.SendMessage("OnMultiSelectExit", SendMessageOptions.DontRequireReceiver);
-    }
-
     private void Update()
     {
         if (isSelecting && selectedObjects.Count > 0 && groupParent != null)
         {
-            // 更新虚拟父物体
             groupParent.transform.position = attachTransform.position;
             groupParent.transform.rotation = attachTransform.rotation;
 
-            // 更新所有物体的位置和旋转
             for (int i = 0; i < selectedObjects.Count; i++)
             {
                 if (selectedObjects[i] != null)
@@ -273,39 +206,16 @@ public class SphereSelectLogic : MonoBehaviour
 
     private void UpdateCenterPosition()
     {
-        if (sphereCollider == null)
-        {
-            Debug.LogWarning("Sphere collider is null!");
-            return;
-        }
-
-        if (float.IsNaN(Radius) || Radius <= 0f)
-        {
-            Debug.LogWarning("Invalid Radius value: " + Radius);
-            Radius = defaultRadius;
-        }
-
         Vector3 newCenter = defaultCenterLocalPosition;
 
-        if (defaultCenter != null)
+        if (defaultCenter != null && Radius < defaultRadius)
         {
-            if (Radius < defaultRadius)
-            {
-                float offset = defaultRadius - Radius;
-                newCenter = new Vector3(
-                    defaultCenterLocalPosition.x - offset,
-                    defaultCenterLocalPosition.y,
-                    defaultCenterLocalPosition.z
-                );
-            }
-            else
-            {
-                newCenter = defaultCenterLocalPosition;
-            }
-        }
-        else
-        {
-            newCenter = Vector3.zero;
+            float offset = defaultRadius - Radius;
+            newCenter = new Vector3(
+                defaultCenterLocalPosition.x - offset,
+                defaultCenterLocalPosition.y,
+                defaultCenterLocalPosition.z
+            );
         }
 
         sphereCollider.center = newCenter;

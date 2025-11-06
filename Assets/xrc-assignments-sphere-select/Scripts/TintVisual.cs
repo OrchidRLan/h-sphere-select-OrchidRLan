@@ -20,9 +20,11 @@ public class TintVisual : MonoBehaviour, IMultiSelectHighlight
         objectRenderer = GetComponent<Renderer>();
         interactable = GetComponent<XRGrabInteractable>();
         
+        // 创建材质实例
         materialInstance = new Material(objectRenderer.material);
         objectRenderer.material = materialInstance;
         
+        // 监听标准 XR 事件（单选）
         if (interactable != null)
         {
             interactable.hoverEntered.AddListener(OnHoverEntered);
@@ -73,17 +75,19 @@ public class TintVisual : MonoBehaviour, IMultiSelectHighlight
         if (!isMultiSelected)
             SetColor(normalColor);
     }
-
+    
     public void OnMultiSelectEnter()
     {
         isMultiSelected = true;
         SetColor(highlightColor);
+        Debug.Log($"{gameObject.name} multi-selected (turned yellow)");
     }
 
     public void OnMultiSelectExit()
     {
         isMultiSelected = false;
         SetColor(normalColor);
+        Debug.Log($"{gameObject.name} multi-select released");
     }
 
     private void SetColor(Color color)

@@ -15,7 +15,7 @@ public class SphereSelectFeedback : MonoBehaviour
 
     [SerializeField]
     [Tooltip("Color of the sphere when the interactor is hovering over an object.")]
-    private Color hoverColor = new Color(1.0f, 0.0f, 0.0f, 0.6f);
+    private Color hoverColor = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
     private GameObject sphereVisual;
     private MeshRenderer sphereRenderer;

@@ -10,6 +10,7 @@ public class SphereSelectInput : MonoBehaviour
     private float inputSensitivity = 0.5f;
 
     [SerializeField]
+    [Tooltip("")]
     private InputActionProperty changeRadius;
 
     private void Awake()
